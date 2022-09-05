@@ -6,12 +6,30 @@ const usevalid = function(value){
   return regix.test(value)
 }
 
+const regixValidator = function(value){
+  let regix = /^[a-zA-Z]+([\s][a-zA-Z]+)*$/
+  return regix.test(value)
+}
+
+const isValid = function(value){
+  if(typeof value === "undefined" || value === null) 
+  return false;
+if(typeof value === "string" && value.trim().length === 0)
+return false;
+return true;
+}
+
+const bodyValidator = function(data){
+  return Object.keys(data).length > 0
+}
+
 const createAuthor =async function(req,res){
   try{
-    let author = req.body
+    let data = req.body
   
-    if(usevalid(author.email)){      
-      let authorCreated = await AuthorModel.create(author)
+    if(!isValid(data.fname) || !regixValidator(data.fname) )return res.status(400).send({status : false ,msg : "fname is invalid contains only character" })
+    if(usevalid(data.email)){      
+      let authorCreated = await AuthorModel.create(data)
       res.status(201).send({msg:authorCreated})
     }else{
       res.status(400).send({msg : "email id is not valid"})
