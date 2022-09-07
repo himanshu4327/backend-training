@@ -1,6 +1,7 @@
 const BlogsModel = require("../models/blogsModel")
 const AuthorModel = require("../models/authorModel");
 const { default: mongoose } = require("mongoose");
+const jwt = require("jsonwebtoken");
 const blogsModel = require("../models/blogsModel");
 
 //********************VALIDATION FUNCTION*************************** */

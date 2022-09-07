@@ -5,6 +5,7 @@ const blogController =require("../Controller/blogController")
 
 
 router.post("/authors",authorController.createAuthor)
+router.post("/login",authorController.authorLogin)
 router.post("/blogs" ,blogController.createBlog)
 router.get("/getBlogs" ,blogController.getBlogs)
 router.put("/updateBlog/:blogId" ,blogController.updateBlog)
