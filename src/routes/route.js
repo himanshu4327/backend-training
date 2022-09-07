@@ -8,4 +8,6 @@ router.post("/authors",authorController.createAuthor)
 router.post("/blogs" ,blogController.createBlog)
 router.get("/getBlogs" ,blogController.getBlogs)
 router.put("/updateBlog/:blogId" ,blogController.updateBlog)
+router.delete("/deleteBlogs/:blogId" ,blogController.deleteBlog)
+router.delete('/deleteBlogs',blogController.deleteFilteredBlog)
 module.exports = router;
