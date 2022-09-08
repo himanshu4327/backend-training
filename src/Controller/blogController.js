@@ -87,7 +87,7 @@ const createBlog = async function (req, res) {
         }
 
         //is author authorized to create this blog
-        if(auhtorId != decodedToken.auhtorId){
+        if(authorId != decodedToken.auhtorId){
             return res
                 .status(400)
                 .send({status: false, message: "Unauthorized access"});
