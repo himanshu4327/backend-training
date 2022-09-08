@@ -87,7 +87,7 @@ const createBlog = async function (req, res) {
         }
 
         //is author authorized to create this blog
-        if(authorId != decodedToken.auhtorId){
+        if(authorId != decodedToken.authorId){
             return res
                 .status(400)
                 .send({status: false, message: "Unauthorized access"});
@@ -470,7 +470,6 @@ const deleteFilteredBlog = async function (req, res) {
 
         const requestBody = req.body;
         const queryParams = req.query;
-        const authorIdFromToken = req.decodedToken.auhtorId;
 
         if (isValidRequest(requestBody)) {
             return res
@@ -509,6 +508,7 @@ const deleteFilteredBlog = async function (req, res) {
                         .status(400)
                         .send({ message: "blogs authorId should be in valid format" });
                 }
+
                 if (!isValidObjectId(authorId)) {
                     return res
                         .status(400)
@@ -546,11 +546,9 @@ const deleteFilteredBlog = async function (req, res) {
 
             if (Array.isArray(filteredBlogs) && filteredBlogs.length > 0) {
                 const blogsToBeDeleted = filteredBlogs.filter((ele) => {
-                    if(ele.authorId == authorIdFromToken){
-                        return ele._id;
-                    }
-                });
-
+                        return  ele._id
+                    });
+                 
                 await BlogsModel.updateMany(
                     { _id: { $in: blogsToBeDeleted } },
                     { $set: { isDeleted: true, deletedAt: Date.now() } }
