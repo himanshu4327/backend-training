@@ -34,6 +34,7 @@ const createBlog = async function (req, res) {
 
         const requestBody = req.body;
         const queryParams = req.query;
+        const decodedToken = req.decodedToken;
 
         //query params must not be empty
         if (isValidRequest(queryParams)) {
@@ -82,7 +83,14 @@ const createBlog = async function (req, res) {
         if (!authorByAuthorId) {
             return res
                 .status(400)
-                .send({ status: false, message: 'No author found by ${authorId}' });
+                .send({ status: false, message: `No author found by ${authorId}` });
+        }
+
+        //is author authorized to create this blog
+        if(auhtorId != decodedToken.auhtorId){
+            return res
+                .status(400)
+                .send({status: false, message: "Unauthorized access"});
         }
 
         //tags could be array of strings
@@ -256,7 +264,7 @@ const getBlogs = async function (req, res) {
 
             //if no queryParams are provided then finding all not deleted blogs
         } else {
-            const allBlogs = await BlogsModel.find(filterCondition);  //{isdeleted: false, dletedat:null }
+            const allBlogs = await BlogsModel.find(filterCondition);  
 
             if (allBlogs.length == 0) {
                 return res
@@ -311,7 +319,7 @@ const updateBlog = async function (req, res) {
         if (!blogByBlogID) {
             return res
                 .status(400)
-                .send({ status: false, message: 'no blog found by ${blogId}' });
+                .send({ status: false, message: `no blog found by ${blogId}` });
         }
 
         //using destructuring then validating selected keys by user
@@ -423,7 +431,7 @@ const deleteBlog = async function (req, res) {
         if (!isValidObjectId(blogId)) {
             return res
                 .status(400)
-                .send({ status: false, message: '${id} is not a valid blogID' });
+                .send({ status: false, message: `${id} is not a valid blogID` });
         }
 
         const blogByBlogId = await BlogsModel.findOne({
@@ -435,10 +443,10 @@ const deleteBlog = async function (req, res) {
         if (!blogByBlogId) {
             return res
                 .status(404)
-                .send({ status: false, message: 'no blog found by ${blogId}' })
+                .send({ status: false, message: `no blog found by ${blogId}` })
         }
 
-        const markDirtyBlog = await BlogsModel.findByIdAndUpdate(
+        await BlogsModel.findByIdAndUpdate(
             { _id: blogId },
             { $set: { isDeleted: true, deletedAt: Date.now() } },
             { new: true }
@@ -462,6 +470,7 @@ const deleteFilteredBlog = async function (req, res) {
 
         const requestBody = req.body;
         const queryParams = req.query;
+        const authorIdFromToken = req.decodedToken.auhtorId;
 
         if (isValidRequest(requestBody)) {
             return res
@@ -510,7 +519,7 @@ const deleteFilteredBlog = async function (req, res) {
                 if (!authorByAuthorId) {
                     return res
                         .status(404)
-                        .send({ status: false, message: "no author found by ${authorId}" })
+                        .send({ status: false, message: `no author found by ${authorId}` })
                 }
                 filterCondition["authorId"] = authorId;
             }
@@ -537,10 +546,12 @@ const deleteFilteredBlog = async function (req, res) {
 
             if (Array.isArray(filteredBlogs) && filteredBlogs.length > 0) {
                 const blogsToBeDeleted = filteredBlogs.filter((ele) => {
-                    return ele._id;
+                    if(ele.authorId == authorIdFromToken){
+                        return ele._id;
+                    }
                 });
 
-                const markDirtyBlog = await BlogsModel.updateMany(
+                await BlogsModel.updateMany(
                     { _id: { $in: blogsToBeDeleted } },
                     { $set: { isDeleted: true, deletedAt: Date.now() } }
                 );
@@ -571,9 +582,12 @@ const deleteFilteredBlog = async function (req, res) {
 
 //******************************EXPORTING ALL BLOG'S HANDLERS******************************* */
 
-module.exports.createBlog = createBlog
-module.exports.getBlogs = getBlogs
-module.exports.updateBlog = updateBlog
-module.exports.deleteBlog = deleteBlog
-module.exports.deleteFilteredBlog = deleteFilteredBlog
+module.exports = {
+    createBlog, 
+    getBlogs ,
+    updateBlog, 
+    deleteBlog, 
+    deleteFilteredBlog,
+}
+
 

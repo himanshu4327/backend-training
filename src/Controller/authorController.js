@@ -1,6 +1,5 @@
 // const { validate } = require("../models/authorModel")
 const AuthorModel = require("../models/authorModel")
-const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
 
@@ -69,10 +68,10 @@ const createAuthor = async function (req, res) {
         .send({ status: false, message: "Title should contain Mr.,Mrs.,Miss" })
     }
 
-    if(!isValid(email)){
+    if (!isValid(email)) {
       return res
         .status(400)
-        .send({status:false , message: "email is required"})
+        .send({ status: false, message: "email is required" })
     }
 
     if (!isValidEmail(email)) {
@@ -96,7 +95,7 @@ const createAuthor = async function (req, res) {
     }
 
     const authorData = {
-      fname: fname.trim(),
+      fname: fname.trim(),  
       lname: lname.trim(),
       title: title.trim(),
       email: email.trim(),
@@ -117,71 +116,71 @@ const createAuthor = async function (req, res) {
 
 //****************************AUTHOR LOGIN****************************** */
 
-const authorLogin = async function (req,res){
-  try{
+const authorLogin = async function (req, res) {
+  try {
 
-      const requestBody = req.body;
-      const queryParams = req.query;
+    const requestBody = req.body;
+    const queryParams = req.query;
 
-      if(isValidRequest(queryParams)){
-        return res
-          .status(400)
-          .send({status:false , message: "Invalid request"});
-      }
+    if (isValidRequest(queryParams)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Invalid request" });
+    }
 
-      if(!isValidRequest(requestBody)){
-        return res
-          .status(400)
-          .send({status: false , message: "data is required"});
-      }
+    if (!isValidRequest(requestBody)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "data is required" });
+    }
 
-      const userName = requestBody.email;
-      const password = requestBody.password;
+    const userName = requestBody.email;
+    const password = requestBody.password;
 
-      if(!isValidEmail(userName)){
-        return res
-          .status(400)
-          .send({status: false , message: "enter a valid email address"});
-      }
+    if (!isValidEmail(userName)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "enter a valid email address" });
+    }
 
-      if(!isValid(password)){
-        return res
-          .status(400)
-          .send({status: false , message:"password is required"})
-      }
+    if (!isValid(password)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "password is required" })
+    }
 
-      const author = await AuthorModel.findOne({
-        email: userName,
-        password : password
-      });
+    const author = await AuthorModel.findOne({
+      email: userName,
+      password: password
+    });
 
-      if(!author){
-        return res
-          .status(404)
-          .send({status:false, message: "no author found "})
-      }
+    if (!author) {
+      return res
+        .status(404)
+        .send({ status: false, message: "no author found " })
+    }
 
-      //creating a jsonWebToken and sending it to responce header and body
+    //creating a jsonWebToken and sending it to responce header and body
 
-      let token = jwt.sign({
-         authorId: author._id.toString() 
-        },
-          "group18project1"
-          );
+    let token = jwt.sign({
+      authorId: author._id.toString()
+    },
+      "group18project1"
+    );
 
-      res.header("x-api-key",token);
+    res.header("x-api-key", token);
 
-      res
-        .status(200)
-        .send({status:true, message: "Author Login Successfully", data :token})
+    res
+      .status(200)
+      .send({ status: true, message: "Author Login Successfully", data: token })
 
-  }catch(error){
+  } catch (error) {
 
-    res.status(400).send({error: error.message})
+    res.status(400).send({ error: error.message })
 
   }
 }
 
 //**********************EXPORTING BOTH HANDLERS********************** */
 
-module.exports={ createAuthor, authorLogin}
+module.exports = { createAuthor, authorLogin }
