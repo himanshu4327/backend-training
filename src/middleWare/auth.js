@@ -38,7 +38,7 @@ const authentication = async function(req,res,next){
 
 //*********************************AUTHORIZATION**********************************/
 
-const authorization = async function (req,res){
+const authorization = async function (req,res,next){
     try{
 
         const blogId = req.params["blogId"];
