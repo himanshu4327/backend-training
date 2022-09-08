@@ -87,10 +87,10 @@ const createBlog = async function (req, res) {
         }
 
         //is author authorized to create this blog
-        if(authorId != decodedToken.authorId){
+        if (authorId != decodedToken.authorId) {
             return res
                 .status(400)
-                .send({status: false, message: "Unauthorized access"});
+                .send({ status: false, message: "Unauthorized access" });
         }
 
         //tags could be array of strings
@@ -264,7 +264,7 @@ const getBlogs = async function (req, res) {
 
             //if no queryParams are provided then finding all not deleted blogs
         } else {
-            const allBlogs = await BlogsModel.find(filterCondition);  
+            const allBlogs = await BlogsModel.find(filterCondition);
 
             if (allBlogs.length == 0) {
                 return res
@@ -546,9 +546,9 @@ const deleteFilteredBlog = async function (req, res) {
 
             if (Array.isArray(filteredBlogs) && filteredBlogs.length > 0) {
                 const blogsToBeDeleted = filteredBlogs.filter((ele) => {
-                        return  ele._id
-                    });
-                 
+                    return ele._id
+                });
+
                 await BlogsModel.updateMany(
                     { _id: { $in: blogsToBeDeleted } },
                     { $set: { isDeleted: true, deletedAt: Date.now() } }
@@ -581,10 +581,10 @@ const deleteFilteredBlog = async function (req, res) {
 //******************************EXPORTING ALL BLOG'S HANDLERS******************************* */
 
 module.exports = {
-    createBlog, 
-    getBlogs ,
-    updateBlog, 
-    deleteBlog, 
+    createBlog,
+    getBlogs,
+    updateBlog,
+    deleteBlog,
     deleteFilteredBlog,
 }
 
