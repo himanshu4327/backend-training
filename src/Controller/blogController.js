@@ -470,6 +470,7 @@ const deleteFilteredBlog = async function (req, res) {
 
         const requestBody = req.body;
         const queryParams = req.query;
+        let result=[];
 
         if (isValidRequest(requestBody)) {
             return res
@@ -545,12 +546,16 @@ const deleteFilteredBlog = async function (req, res) {
             const filteredBlogs = await BlogsModel.find(filterCondition)
 
             if (Array.isArray(filteredBlogs) && filteredBlogs.length > 0) {
-                const blogsToBeDeleted = filteredBlogs.filter((ele) => {
-                    return ele._id
-                });
+                for(let i=0;i<filteredBlogs.length;i++){
+                    if(!(filteredBlogs[i].authorId==req.decodedToken.authorId))
+                        continue;
+                    result.push(filteredBlogs[i]._id);
+                }
+                if(result.length==0)
+                    return res.status(403).send({msg:"You are not Authorized"})
 
                 await BlogsModel.updateMany(
-                    { _id: { $in: blogsToBeDeleted } },
+                    { _id: { $in: result } },
                     { $set: { isDeleted: true, deletedAt: Date.now() } }
                 );
 
