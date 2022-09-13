@@ -2,7 +2,6 @@ const BlogsModel = require("../models/blogsModel")
 const AuthorModel = require("../models/authorModel");
 const { default: mongoose } = require("mongoose");
 const jwt = require("jsonwebtoken");
-const blogsModel = require("../models/blogsModel");
 
 //********************VALIDATION FUNCTION*************************** */
 
@@ -82,14 +81,14 @@ const createBlog = async function (req, res) {
 
         if (!authorByAuthorId) {
             return res
-                .status(400)
+                .status(404)         //
                 .send({ status: false, message: `No author found by ${authorId}` });
         }
 
         //is author authorized to create this blog
         if (authorId != decodedToken.authorId) {
             return res
-                .status(400)
+                .status(403)            //
                 .send({ status: false, message: "Unauthorized access" });
         }
 
@@ -194,7 +193,7 @@ const getBlogs = async function (req, res) {
 
                 if (!authorByAuthorId) {
                     return res
-                        .status(400)
+                        .status(404)          //
                         .send({ status: false, message: "no author found" })
                 }
                 filterCondition["authorId"] = authorId;
@@ -318,7 +317,7 @@ const updateBlog = async function (req, res) {
 
         if (!blogByBlogID) {
             return res
-                .status(400)
+                .status(404)           //
                 .send({ status: false, message: `no blog found by ${blogId}` });
         }
 
@@ -470,7 +469,7 @@ const deleteFilteredBlog = async function (req, res) {
 
         const requestBody = req.body;
         const queryParams = req.query;
-        let result=[];
+        let result = [];
 
         if (isValidRequest(requestBody)) {
             return res
@@ -546,13 +545,13 @@ const deleteFilteredBlog = async function (req, res) {
             const filteredBlogs = await BlogsModel.find(filterCondition)
 
             if (Array.isArray(filteredBlogs) && filteredBlogs.length > 0) {
-                for(let i=0;i<filteredBlogs.length;i++){
-                    if(!(filteredBlogs[i].authorId==req.decodedToken.authorId))
+                for (let i = 0; i < filteredBlogs.length; i++) {
+                    if (!(filteredBlogs[i].authorId == req.decodedToken.authorId))
                         continue;
                     result.push(filteredBlogs[i]._id);
                 }
-                if(result.length==0)
-                    return res.status(403).send({msg:"You are not Authorized"})
+                if (result.length == 0)
+                    return res.status(403).send({ msg: "You are not Authorized" })
 
                 await BlogsModel.updateMany(
                     { _id: { $in: result } },
@@ -592,5 +591,3 @@ module.exports = {
     deleteBlog,
     deleteFilteredBlog,
 }
-
-

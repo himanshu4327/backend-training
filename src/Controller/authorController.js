@@ -84,7 +84,7 @@ const createAuthor = async function (req, res) {
 
     if (isEmailUnique) {
       return res
-        .status(400)
+        .status(409)           //
         .send({ status: false, message: "Email already exits" });
     }
 
@@ -95,7 +95,7 @@ const createAuthor = async function (req, res) {
     }
 
     const authorData = {
-      fname: fname.trim(),  
+      fname: fname.trim(),
       lname: lname.trim(),
       title: title.trim(),
       email: email.trim(),
@@ -176,7 +176,7 @@ const authorLogin = async function (req, res) {
 
   } catch (error) {
 
-    res.status(400).send({ error: error.message })
+    res.status(500).send({ error: error.message })            //
 
   }
 }
