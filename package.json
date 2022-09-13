@@ -1,12 +1,12 @@
 {
-  "name": "project1",
+  "name": "mini_blogging_site_project",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "abhishek prasad",
+  "author": "Himanshu Soni",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.0",
